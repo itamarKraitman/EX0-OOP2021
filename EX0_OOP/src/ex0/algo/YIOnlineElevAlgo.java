@@ -49,8 +49,40 @@ public class YIOnlineElevAlgo implements ElevatorAlgo{
 //                curr.goTo(1);
 //            }
 //        }
-       for (int i = 0; i < this._building.numberOfElevetors(); i++) {
-           callNode current
-       }
+        for (int i = 0; i < this._building.numberOfElevetors(); i++) {
+            while (calls[i] != null && calls[i].size() != 0) {
+                CallForElevator current = calls[i].get(0);//call
+                if (current.getType() == UP) {//handling all UP calls
+                    destQueue.enqueue(current.getDest());
+//                    srcQueue.enqueue(cu);
+                }
+            }
+            destQueue = sortQueueAscendingOrder(destQueue);
+//            callNode call = destQueue.getFirst();
+            while (!destQueue.isEmpty()) {
+                curr.goTo(destQueue.getFirst().getData());
+                destQueue.dequeue();
+            }
+        }
+    }
+
+    public static callsQueue sortQueueAscendingOrder(callsQueue queue) {
+        callsQueue newQueue = new callsQueue();
+        if (!queue.isEmpty()) {
+            int[] temp = new int[queue.getSize()];
+            callNode curr = queue.getFirst();
+            int i = 0;
+            while (curr.getNext() != null) {
+                temp[i] = curr.getData();
+                curr = curr.getNext();
+                i++;
+            }
+            Arrays.sort(temp);
+            for (int j = 0; j < temp.length; j++) {
+                newQueue.enqueue(temp[j]);
+            }
+        }
+        return newQueue;
+
     }
 }
