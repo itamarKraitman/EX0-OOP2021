@@ -2,10 +2,7 @@ package ex0.algo;
 
 import ex0.CallForElevator;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Queue;
+import java.util.*;
 
 /**
  * This class implements a data structure with FIFO Logic in order to make order in the calls for elevators
@@ -13,6 +10,7 @@ import java.util.Queue;
 public class callsQueue {
     private callNode front, end;
     private int size;
+    private int dest;
 
     public callsQueue() {
         this.front = this.end = null;
@@ -43,8 +41,8 @@ public class callsQueue {
         }
     }
 
-    public callNode peek() {
-        return this.front;
+    public int peek() {
+        return this.front.getData();
     }
     public int getSize() {
         return this.size;
@@ -54,5 +52,42 @@ public class callsQueue {
     }
     public boolean isEmpty() {
         return size == 0;
+    }
+    public void sortQueueA(callsQueue q) { // Ascending sort
+        ArrayList<Integer> temp = new ArrayList<>();
+        while(!q.isEmpty())
+        {
+            temp.add(q.peek());
+            q.dequeue();
+        }
+        Collections.sort(temp);
+        dest = (temp.size() == 0 ? null : temp.get(temp.size() - 1));
+        for (Integer integer : temp) {
+            q.enqueue(integer);
+        }
+    }
+    public void sortQueueD(callsQueue q) { // Descending sort
+        ArrayList<Integer> temp = new ArrayList<>();
+        while(!q.isEmpty())
+        {
+            temp.add(q.peek());
+            q.dequeue();
+        }
+        Collections.sort(temp, Collections.reverseOrder());
+        dest = (temp.size() == 0 ? null : temp.get(temp.size() - 1));
+        for (Integer integer : temp) {
+            q.enqueue(integer);
+        }
+    }
+
+    public callNode getLast(){
+        return this.end;
+    }
+    public int getLast(callsQueue q) {
+        return this.dest;
+    }
+
+    public int size() {
+        return  this.size;
     }
 }
