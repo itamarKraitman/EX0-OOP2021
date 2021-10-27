@@ -53,40 +53,36 @@ public class YIOnlineElevAlgo implements ElevatorAlgo {
         int ind = -1;
         boolean flag = false;
         for (int i = 0; i < this.getBuilding().numberOfElevetors(); i++) {
-            if (this.getBuilding().getElevetor(i).getState() == 0 && this.getBuilding().getElevetor(i).getPos() == c.getSrc()) {
+            if (this.getBuilding().getElevetor(i).getState() == 0) {
                 flag = true;
                 ind = i;
-                allocate(c, ind);
             }
-            if (this.getBuilding().getElevetor(i).getState() == 1 && this.getBuilding().getElevetor(i).getPos() < c.getSrc() && c.getType() == 1) {
+            if (this.getBuilding().getElevetor(i).getState() == 1 && this.getBuilding().getElevetor(i).getPos() < c.getSrc() && c.getSrc() - c.getDest() < 1) {
                 flag = true;
                 if (timeToDest(_building.getElevetor(i), c.getSrc()) < min) {
                     min = timeToDest(_building.getElevetor(i), c.getSrc());
                     ind = i;
-                    allocate(c, ind);
                 }
             }
-            if (this.getBuilding().getElevetor(i).getState() == -1 && this.getBuilding().getElevetor(i).getPos() > c.getSrc() && c.getType() == -1) {
+            if (this.getBuilding().getElevetor(i).getState() == -1 && this.getBuilding().getElevetor(i).getPos() > c.getSrc() && c.getSrc() - c.getDest() > 1) {
                 flag = true;
                 if (timeToDest(_building.getElevetor(i), c.getSrc()) < min) {
                     min = timeToDest(_building.getElevetor(i), c.getSrc());
                     ind = i;
-                    allocate(c, ind);
                 }
             }
             if (!flag) {
                 if (timeToDestReverse(calls[i].upQ.getLast(calls[i].upQ), c.getSrc()) < min) {
                     min = timeToDestReverse(calls[i].upQ.getLast(calls[i].upQ), c.getSrc());
                     ind = i;
-                    allocate(c, ind);
                 }
                 if (timeToDestReverse(calls[i].downQ.getLast(calls[i].downQ), c.getSrc()) < min) {
                     min = timeToDestReverse(calls[i].downQ.getLast(calls[i].downQ), c.getSrc());
                     ind = i;
-                    allocate(c, ind);
                 }
             }
         }
+        allocate(c, ind);
         if (flag) {
             flag = false;
         }
@@ -111,19 +107,19 @@ public class YIOnlineElevAlgo implements ElevatorAlgo {
             calls[elev].Switch();
         }
         Elevator curr = this._building.getElevetor(elev);
-
-        //UP
         if (calls[elev].pointer.getFirst() != null) {
             if(curr.getState() == 0){
                 curr.goTo(calls[elev].pointer.peek());
-            } else if (curr.getPos() == calls[elev].pointer.peek()){
                 calls[elev].pointer.dequeue();
             } else if (curr.getState() == 1 && curr.getPos() < calls[elev].pointer.peek()){
                 curr.stop(calls[elev].pointer.peek());
+                calls[elev].pointer.dequeue();
+                curr.goTo(calls[elev].pointer.getLast().getData());
             } else if(curr.getState() == -1 && curr.getPos() > calls[elev].pointer.peek()){
                 curr.stop(calls[elev].pointer.peek());
+                calls[elev].pointer.dequeue();
+                curr.goTo(calls[elev].pointer.getLast().getData());
             }
-            calls[elev].pointer.dequeue();
         }
     }
 }
