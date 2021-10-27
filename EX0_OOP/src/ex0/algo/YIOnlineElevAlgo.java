@@ -38,15 +38,19 @@ public class YIOnlineElevAlgo implements ElevatorAlgo{
         return 0;
     }
 
+
     @Override
     public void cmdElevator(int elev) {
-        Elevator currentEle = this.getBuilding().getElevetor(elev);
-        //if the elevator is in the same floor of a call, take the call
-        if (currentEle.getState() == Elevator.LEVEL && currentEle.getPos() == calls.element().getSrc())
-            currentEle.goTo(calls.element().getSrc());
-        //if the elevator is in LEVEL state, go to the src floor and take the call
-        else if (currentEle.getState() == Elevator.LEVEL)
-            currentEle.goTo(calls.element().getSrc());
-        else
+        Elevator curr = this.getBuilding().getElevetor(elev);
+//        if (calls[elev] != null && calls[elev].size() != 0) {
+//            curr.goTo(calls[elev].get(0));
+//            curr.goTo(calls[elev].get(1));
+//            if (curr.getState() == 0) {
+//                curr.goTo(1);
+//            }
+//        }
+       for (int i = 0; i < this._building.numberOfElevetors(); i++) {
+           callNode current
+       }
     }
 }
