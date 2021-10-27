@@ -36,12 +36,14 @@ public class callsQueue {
             size--;
             return temp;
         } else {
-            System.out.println("queue is empty, nothing to dequeue");
             return null;
         }
     }
 
     public int peek() {
+        if(this.front == null){
+            return 0;
+        }
         return this.front.getData();
     }
     public int getSize() {
