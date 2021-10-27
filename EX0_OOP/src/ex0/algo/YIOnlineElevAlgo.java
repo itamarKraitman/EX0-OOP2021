@@ -103,23 +103,23 @@ public class YIOnlineElevAlgo implements ElevatorAlgo {
 
     @Override
     public void cmdElevator(int elev) {
-        if (calls[elev].pointer.getFirst() == null) {
-            calls[elev].Switch();
-        }
         Elevator curr = this._building.getElevetor(elev);
         if (calls[elev].pointer.getFirst() != null) {
             if(curr.getState() == 0){
                 curr.goTo(calls[elev].pointer.peek());
                 calls[elev].pointer.dequeue();
-            } else if (curr.getState() == 1 && curr.getPos() < calls[elev].pointer.peek()){
-                curr.stop(calls[elev].pointer.peek());
+            } else if (curr.getState() == 1){
+                curr.goTo(calls[elev].pointer.peek());
                 calls[elev].pointer.dequeue();
                 curr.goTo(calls[elev].pointer.getLast().getData());
-            } else if(curr.getState() == -1 && curr.getPos() > calls[elev].pointer.peek()){
-                curr.stop(calls[elev].pointer.peek());
+            } else if(curr.getState() == -1){
+                curr.goTo(calls[elev].pointer.peek());
                 calls[elev].pointer.dequeue();
                 curr.goTo(calls[elev].pointer.getLast().getData());
             }
+        }
+        if (calls[elev].pointer.getFirst() == null) {
+            calls[elev].Switch();
         }
     }
 }

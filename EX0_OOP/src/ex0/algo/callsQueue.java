@@ -88,7 +88,6 @@ public class callsQueue {
     public int getLast(callsQueue q) {
         return this.dest;
     }
-
     public int size() {
         return  this.size;
     }
