@@ -3,6 +3,7 @@ package ex0;
 import ex0.algo.ElevatorAlgo;
 import ex0.algo.ShabatElev3Algo;
 import ex0.simulator.Simulator_A;
+import ex0.algo.YIOnlineElevAlgo;
 
 /**
  * This is the main file of Ex0 (OOP), Do play with it and make sure you know how to operate the simulator before

@@ -14,8 +14,8 @@ public class YIOnlineElevAlgo implements ElevatorAlgo {
 
     public YIOnlineElevAlgo(Building b) {
         _building = b;
-        calls = new EleQueue[numElev + 1];
         int numElev = b.numberOfElevetors();
+        calls = new EleQueue[numElev];
         for (int i = 0; i < numElev; i++) {
             calls[i] = new EleQueue();
         }
@@ -53,49 +53,48 @@ public class YIOnlineElevAlgo implements ElevatorAlgo {
     public int allocateAnElevator(CallForElevator c) {
         double min = Double.MAX_VALUE;
         int ind = -1;
-        for (int i = 0; i < numElev; i++) {
+        boolean flag = false;
+        for (int i = 0; i < this.getBuilding().numberOfElevetors(); i++) {
             if (this.getBuilding().getElevetor(i).getState() == 0 && this.getBuilding().getElevetor(i).getPos() == c.getSrc()) {
-                if (c.getType() == 1) {
-                    calls[i].upQ.enqueue(c.getSrc());
-                    calls[i].upQ.enqueue(c.getDest());
-                    calls[i].upQ.sortQueueA(calls[i].upQ);
-                } else {
-                    calls[i].downQ.enqueue(c.getSrc());
-                    calls[i].downQ.enqueue(c.getDest());
-                    calls[i].downQ.sortQueueD(calls[i].downQ);
-                }
+                flag = true;
+                ind = i;
             }
             if (this.getBuilding().getElevetor(i).getState() == 1 && this.getBuilding().getElevetor(i).getPos() < c.getSrc() && c.getType() == 1) {
+                flag = true;
                 if (timeToDest(_building.getElevetor(i), c.getSrc()) < min) {
                     min = timeToDest(_building.getElevetor(i), c.getSrc());
                     ind = i;
                 }
             }
             if (this.getBuilding().getElevetor(i).getState() == -1 && this.getBuilding().getElevetor(i).getPos() > c.getSrc() && c.getType() == -1) {
+                flag = true;
                 if (timeToDest(_building.getElevetor(i), c.getSrc()) < min) {
                     min = timeToDest(_building.getElevetor(i), c.getSrc());
                     ind = i;
                 }
             }
-            if(timeToDestReverse(calls[i].upQ.getLast(calls[i].upQ),c.getSrc()) < min){
-                min = timeToDestReverse(calls[i].upQ.getLast(calls[i].upQ),c.getSrc());
-                ind = i;
+            if(!flag) {
+                if (timeToDestReverse(calls[i].upQ.getLast(calls[i].upQ), c.getSrc()) < min) {
+                    min = timeToDestReverse(calls[i].upQ.getLast(calls[i].upQ), c.getSrc());
+                    ind = i;
+                }
+                if (timeToDestReverse(calls[i].downQ.getLast(calls[i].downQ), c.getSrc()) < min) {
+                    min = timeToDestReverse(calls[i].downQ.getLast(calls[i].downQ), c.getSrc());
+                    ind = i;
+                }
             }
-            if(timeToDestReverse(calls[i].downQ.getLast(calls[i].downQ),c.getSrc()) < min) {
-                min = timeToDestReverse(calls[i].downQ.getLast(calls[i].downQ),c.getSrc());
-                ind = i;
+            if (c.getType() == 1) {
+                calls[ind].upQ.enqueue(c.getSrc());
+                calls[ind].upQ.enqueue(c.getDest());
+                calls[ind].upQ.sortQueueA(calls[ind].upQ);
+            } else {
+                calls[ind].downQ.enqueue(c.getSrc());
+                calls[ind].downQ.enqueue(c.getDest());
+                calls[ind].downQ.sortQueueD(calls[ind].downQ);
             }
         }
-        if (ind == -1)
-            ind = 0;
-        if (c.getType() == 1) {
-            calls[ind].upQ.enqueue(c.getSrc());
-            calls[ind].upQ.enqueue(c.getDest());
-            calls[ind].upQ.sortQueueA(calls[ind].upQ);
-        } else {
-            calls[ind].downQ.enqueue(c.getSrc());
-            calls[ind].downQ.enqueue(c.getDest());
-            calls[ind].downQ.sortQueueD(calls[ind].downQ);
+        if(flag){
+            flag = false;
         }
         return ind;
     }
