@@ -10,6 +10,7 @@ public class YIOnlineElevAlgo implements ElevatorAlgo {
     private EleQueue[] calls;
     private int numElev;
 
+    // Constructor class + EleQueue initialization
     public YIOnlineElevAlgo(Building b) {
         _building = b;
         int numElev = b.numberOfElevetors();
@@ -45,6 +46,11 @@ public class YIOnlineElevAlgo implements ElevatorAlgo {
         return "Elevator algo, Yuval Bubnovsky & Itamar Kraitman";
     }
 
+    /*
+     The "Dispatcher" that decides which call is allocated to which elevator, the algorithm uses a very simple logic : it first checks for any 'LEVEL' elevators or elevators that can
+     "pick up" the call if it's on their intended route, if no such elevator can be found - loop through all the elevators again and allocate to the one which will be quickest to arrive
+      it then sends the call to an "allocate" helper function
+     */
     @Override
     public int allocateAnElevator(CallForElevator c) {
         double min = Double.MAX_VALUE;
@@ -80,6 +86,9 @@ public class YIOnlineElevAlgo implements ElevatorAlgo {
         return ind;
     }
 
+    /*
+    allocation helper function, add the call source and destination to the correct queue (up or down) and then sorts the queues
+     */
     private void allocate(CallForElevator c, int ind) {
         if (calls[ind].upQ.isEmpty() && calls[ind].downQ.isEmpty()) {
             if (this.getBuilding().getElevetor(ind).getPos() < c.getSrc()) {
@@ -101,6 +110,10 @@ public class YIOnlineElevAlgo implements ElevatorAlgo {
     }
 
     @Override
+    /*
+    this is where we tell each elevator where to go. We achieve this by first checking to see if the pointer is pointing at an empty queue (if so - we switch it to the other one)
+    then we just run through each queue and execute it's orders
+     */
     public void cmdElevator(int elev) {
         Elevator curr = this._building.getElevetor(elev);
         if (calls[elev].downQ.isEmpty() && calls[elev].upQ.isEmpty()) {
@@ -109,48 +122,26 @@ public class YIOnlineElevAlgo implements ElevatorAlgo {
         if (calls[elev].pointer.isEmpty()) {
             calls[elev].Switch();
             return;
-        }
-        else if (calls[elev].pointer.getFirst().getData() == curr.getPos()) {
+        } else if (calls[elev].pointer.getFirst().getData() == curr.getPos()) {
             calls[elev].pointer.dequeue();
         }
         if (!calls[elev].pointer.isEmpty()) {
             if (curr.getState() == 0) {
                 curr.goTo(calls[elev].pointer.getFirst().getData());
-            }
-            else {
-                if (curr.getState() == 1){
-                    if (this._building.getElevetor(elev).getPos() <= calls[elev].pointer.getFirst().getData()){
+            } else {
+                if (curr.getState() == 1) {
+                    if (this._building.getElevetor(elev).getPos() <= calls[elev].pointer.getFirst().getData()) {
                         curr.stop(calls[elev].pointer.getFirst().getData());
                     }
-                }
-                else {
-                    if (this._building.getElevetor(elev).getPos() >= calls[elev].pointer.getFirst().getData()){
+                } else {
+                    if (this._building.getElevetor(elev).getPos() >= calls[elev].pointer.getFirst().getData()) {
                         curr.stop(calls[elev].pointer.getFirst().getData());
                     }
                 }
             }
-//                if (curr.getState() == 1 || curr.getState() == -1) {
-//                curr.stop(calls[elev].pointer.getFirst().getData());
-//            }
         }
-
-//        if (calls[elev].pointer.getFirst() != null) {
-//            if (curr.getState() == 0) {
-//                curr.goTo(calls[elev].pointer.peek());
-//                calls[elev].pointer.dequeue();
-//            } else if (curr.getState() == 1) {
-//                curr.goTo(calls[elev].pointer.peek());
-//                calls[elev].pointer.dequeue();
-//                curr.goTo(calls[elev].pointer.getLast().getData());
-//            } else if (curr.getState() == -1) {
-//                curr.goTo(calls[elev].pointer.peek());
-//                calls[elev].pointer.dequeue();
-//                curr.goTo(calls[elev].pointer.getLast().getData());
-//            }
-//        }
-//        if (calls[elev].pointer.isEmpty()) {
-//            calls[elev].Switch();
     }
 }
+
 
 

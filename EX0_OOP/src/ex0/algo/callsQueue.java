@@ -4,7 +4,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 /**
- * This class implements a data structure with FIFO Logic in order to make order in the calls for elevators
+ * Our home brew Queue implementation - supports all the standard Queue methods and also the ability
+ * to sort our queues and ascending/descending order & retrieving the last element of the queue.
  */
 public class callsQueue {
     private callNode front, end;

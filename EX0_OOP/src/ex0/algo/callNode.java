@@ -1,6 +1,8 @@
 package ex0.algo;
 
-import ex0.CallForElevator;
+/*
+    Standard node implementation for our Queue data structure
+ */
 
 public class
 callNode {
