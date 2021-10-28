@@ -2,7 +2,8 @@ package ex0.algo;
 
 import ex0.CallForElevator;
 
-public class callNode {
+public class
+callNode {
     private int data;
     private callNode next;
 

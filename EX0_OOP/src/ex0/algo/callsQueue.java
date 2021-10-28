@@ -1,8 +1,7 @@
 package ex0.algo;
 
-import ex0.CallForElevator;
-
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
 
 /**
  * This class implements a data structure with FIFO Logic in order to make order in the calls for elevators
@@ -21,8 +20,7 @@ public class callsQueue {
         callNode newCall = new callNode(data);
         if (this.front == null) {//queue is empty
             this.front = this.end = newCall;
-        }
-        else {
+        } else {
             this.end.setNext(newCall);
             this.end = newCall;
         }
@@ -41,54 +39,64 @@ public class callsQueue {
     }
 
     public int peek() {
-        if(this.front == null){
+        if (this.front == null) {
             return 0;
         }
         return this.front.getData();
     }
+
     public int getSize() {
         return this.size;
     }
+
     public callNode getFirst() {
         return this.front;
     }
+
     public boolean isEmpty() {
         return size == 0;
     }
+
     public void sortQueueA(callsQueue q) { // Ascending sort
         ArrayList<Integer> temp = new ArrayList<>();
-        while(!q.isEmpty())
-        {
+        while (!q.isEmpty()) {
             temp.add(q.peek());
             q.dequeue();
         }
         Collections.sort(temp);
-        dest = (temp.size() == 0 ? null : temp.get(temp.size() - 1));
-        for (Integer integer : temp) {
-            q.enqueue(integer);
-        }
-    }
-    public void sortQueueD(callsQueue q) { // Descending sort
-        ArrayList<Integer> temp = new ArrayList<>();
-        while(!q.isEmpty())
-        {
-            temp.add(q.peek());
-            q.dequeue();
-        }
-        Collections.sort(temp, Collections.reverseOrder());
-        dest = (temp.size() == 0 ? null : temp.get(temp.size() - 1));
         for (Integer integer : temp) {
             q.enqueue(integer);
         }
     }
 
-    public callNode getLast(){
+    public void sortQueueD(callsQueue q) { // Descending sort
+        ArrayList<Integer> temp = new ArrayList<>();
+        while (!q.isEmpty()) {
+            temp.add(q.peek());
+            q.dequeue();
+        }
+        temp.sort(Collections.reverseOrder());
+        for (Integer integer : temp) {
+            q.enqueue(integer);
+        }
+    }
+
+    public String toString() {
+        String build = "";
+        callNode current = (isEmpty()) ? null : getFirst();
+        while (current != null) {
+            String currElem = String.valueOf(current.getData());
+            build = (build.length() == 0) ? currElem : currElem + ", " + build;
+            current = current.getNext();
+        }
+        return "[" + build + "]";
+    }
+
+    public callNode getLast() {
         return this.end;
     }
-    public int getLast(callsQueue q) {
-        return this.dest;
-    }
+
     public int size() {
-        return  this.size;
+        return this.size;
     }
 }
