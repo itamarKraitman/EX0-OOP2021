@@ -26,12 +26,6 @@ public class YIOnlineElevAlgo implements ElevatorAlgo {
      * @param dest the destination floor
      * @return time for ele to reach dest
      */
-    private double timeToDest(int start, int end, int pos, int id) { // Time calculation for pickup on the way
-        Elevator ele = this.getBuilding().getElevetor(id);
-        int floorToPass = Math.abs((end - start) + (start - pos));
-        double speed = ele.getSpeed();
-        return ele.getTimeForClose() + ele.getTimeForOpen() + (floorToPass / speed) + ele.getStopTime() + ele.getStartTime();
-    }
 
     private double timeToDest(Elevator ele, int dest) {
         int pos = ele.getPos();
@@ -56,46 +50,7 @@ public class YIOnlineElevAlgo implements ElevatorAlgo {
         double min = Double.MAX_VALUE;
         int ind = -1;
         boolean flag = false;
-      /*  for(int i = 0;i<this.getBuilding().numberOfElevetors();i++){
-            Elevator curr = this.getBuilding().getElevetor(i);
-            EleQueue eq = calls[i];
-            double ph; // place holder
-            if(curr.getState()!=-2){
-                if(eq.upQ.isEmpty() && eq.downQ.isEmpty()){
-                    ph = timeToDest(c.getSrc(),c.getDest(),curr.getPos(),i);
-                    min = Math.min(ph,min);
-                    if(min == ph) {
-                        ind = i;
-                    }
-                }
-                if(eq.heading) {
-                    if(curr.getPos()<c.getSrc()){
-                        ph = timeToDest(c.getSrc(),c.getDest(),curr.getPos(),i);
-                        min = Math.min(ph,min);
-                        if(min == ph) {
-                            ind = i;
-                        }
-                        if(c.getSrc() < c.getDest()){
-                            ph = timeToDest(c.getSrc(),c.getDest(),curr.getPos(),i);
-                            min = Math.min(ph,min);
-                            if(min == ph) {
-                                ind = i;
-                            }
-                        } else {
-                            ph = timeToDest(c.getSrc(),c.getDest(),curr.getPos(),i);
-                            min = Math.min(ph,min);
-                            if(min == ph) {
-                                ind = i;
-                        }
-                    }
-                }
-            }
-        }*/
         for (int i = 0; i < this.getBuilding().numberOfElevetors(); i++) {
-//            if (this.getBuilding().getElevetor(i).getState() == 0) {
-//                flag = true;
-//                ind = i;
-//            }
             if (this.getBuilding().getElevetor(i).getState() == 0 || (this.getBuilding().getElevetor(i).getState() == 1 && this.getBuilding().getElevetor(i).getPos() < c.getSrc() && c.getSrc() - c.getDest() < 1)) {
                 flag = true;
                 if (timeToDest(_building.getElevetor(i), c.getSrc()) < min) {
@@ -120,13 +75,6 @@ public class YIOnlineElevAlgo implements ElevatorAlgo {
                 min = timeToDest(_building.getElevetor(i), c.getSrc());
                 ind = i;
             }
-
-
-      /*  for(int i = 0;i<this.getBuilding().numberOfElevetors();i++){
-            calls[i].upQ.sortQueueA(calls[i].upQ);
-            calls[i].downQ.sortQueueD(calls[i].downQ);
-        }*/
-
         }
         allocate(c, ind);
         return ind;
@@ -150,7 +98,6 @@ public class YIOnlineElevAlgo implements ElevatorAlgo {
             calls[ind].downQ.enqueue(c.getSrc());
             calls[ind].downQ.sortQueueD(calls[ind].downQ);
         }
-        //  System.out.println(calls[ind].upQ.toString());
     }
 
     @Override
