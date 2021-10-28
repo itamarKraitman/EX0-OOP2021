@@ -1,23 +1,23 @@
 package ex0;
 
 import ex0.algo.ElevatorAlgo;
-import ex0.algo.ShabatElev3Algo;
-import ex0.simulator.Simulator_A;
 import ex0.algo.YIOnlineElevAlgo;
+import ex0.simulator.Simulator_A;
 
 /**
  * This is the main file of Ex0 (OOP), Do play with it and make sure you know how to operate the simulator before
  * starting to implement the algorithm.
  */
 public class Ex0_main {
-    public static Long ID0=123456789L, ID1 = null, ID2 = null;
+    public static Long ID0 = 123456789L, ID1 = null, ID2 = null;
+
     public static void main(String[] ar) {
         String codeOwner = codeOwner();
         Simulator_A.setCodeOwner(codeOwner);
         for (int stage = 0; stage < 10; stage++) {
-         //   String codeOwner = codeOwner();
+            //   String codeOwner = codeOwner();
             Simulator_A.setCodeOwner(codeOwner);
-            //          int stage = 9;  // any case in [0,9].
+            //             int stage = 1;  // any case in [0,9].
             System.out.println("Ex0 Simulator: isStarting, stage=" + stage + ") ... =  ");
             String callFile = null; // use the predefined cases [0-9].
             // String callFile = "data/Ex0_stage_2__.csv"; //
@@ -37,6 +37,7 @@ public class Ex0_main {
             Simulator_A.writeAllCalls("out/Ex0_Calls_case_" + stage + "_.csv"); // time,src,dest,state,elevInd, dt.
         }
     }
+
 
     private static String codeOwner() {
         String owners = "none";

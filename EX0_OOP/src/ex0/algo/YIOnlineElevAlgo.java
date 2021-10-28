@@ -26,12 +26,20 @@ public class YIOnlineElevAlgo implements ElevatorAlgo {
      * @param dest the destination floor
      * @return time for ele to reach dest
      */
-    private double timeToDest(int start, int end, int pos,int id) { // Time calculation for pickup on the way
+    private double timeToDest(int start, int end, int pos, int id) { // Time calculation for pickup on the way
         Elevator ele = this.getBuilding().getElevetor(id);
         int floorToPass = Math.abs((end - start) + (start - pos));
         double speed = ele.getSpeed();
         return ele.getTimeForClose() + ele.getTimeForOpen() + (floorToPass / speed) + ele.getStopTime() + ele.getStartTime();
     }
+
+    private double timeToDest(Elevator ele, int dest) {
+        int pos = ele.getPos();
+        int floorToPass = Math.abs(dest - pos);
+        double speed = ele.getSpeed();
+        return ele.getTimeForClose() + ele.getTimeForOpen() + (floorToPass / speed) + ele.getStopTime() + ele.getStartTime();
+    }
+
 
     @Override
     public Building getBuilding() {
@@ -48,7 +56,7 @@ public class YIOnlineElevAlgo implements ElevatorAlgo {
         double min = Double.MAX_VALUE;
         int ind = -1;
         boolean flag = false;
-        for(int i = 0;i<this.getBuilding().numberOfElevetors();i++){
+      /*  for(int i = 0;i<this.getBuilding().numberOfElevetors();i++){
             Elevator curr = this.getBuilding().getElevetor(i);
             EleQueue eq = calls[i];
             double ph; // place holder
@@ -82,25 +90,54 @@ public class YIOnlineElevAlgo implements ElevatorAlgo {
                     }
                 }
             }
+        }*/
+        for (int i = 0; i < this.getBuilding().numberOfElevetors(); i++) {
+//            if (this.getBuilding().getElevetor(i).getState() == 0) {
+//                flag = true;
+//                ind = i;
+//            }
+            if (this.getBuilding().getElevetor(i).getState() == 0 || (this.getBuilding().getElevetor(i).getState() == 1 && this.getBuilding().getElevetor(i).getPos() < c.getSrc() && c.getSrc() - c.getDest() < 1)) {
+                flag = true;
+                if (timeToDest(_building.getElevetor(i), c.getSrc()) < min) {
+                    min = timeToDest(_building.getElevetor(i), c.getSrc());
+                    ind = i;
+                }
+            }
+            if (this.getBuilding().getElevetor(i).getState() == 0 || (this.getBuilding().getElevetor(i).getState() == -1 && this.getBuilding().getElevetor(i).getPos() > c.getSrc() && c.getSrc() - c.getDest() > 1)) {
+                flag = true;
+                if (timeToDest(_building.getElevetor(i), c.getSrc()) < min) {
+                    min = timeToDest(_building.getElevetor(i), c.getSrc());
+                    ind = i;
+                }
+            }
         }
-    }
-        allocate(c, ind);
         if (flag) {
-            flag = false;
+            allocate(c, ind);
+            return ind;
         }
+        for (int i = 0; i < this.getBuilding().numberOfElevetors(); i++) {
+            if (timeToDest(_building.getElevetor(i), c.getSrc()) < min) {
+                min = timeToDest(_building.getElevetor(i), c.getSrc());
+                ind = i;
+            }
+
+
       /*  for(int i = 0;i<this.getBuilding().numberOfElevetors();i++){
             calls[i].upQ.sortQueueA(calls[i].upQ);
             calls[i].downQ.sortQueueD(calls[i].downQ);
         }*/
+
+        }
+        allocate(c, ind);
         return ind;
     }
 
     private void allocate(CallForElevator c, int ind) {
-        if(calls[ind].upQ.isEmpty() && calls[ind].downQ.isEmpty()){
-            if(this.getBuilding().getElevetor(ind).getPos() < c.getSrc()){
+        if (calls[ind].upQ.isEmpty() && calls[ind].downQ.isEmpty()) {
+            if (this.getBuilding().getElevetor(ind).getPos() < c.getSrc()) {
                 calls[ind].upQ.enqueue(c.getSrc());
             }
-            if(this.getBuilding().getElevetor(ind).getPos() > c.getSrc()){
+            if (this.getBuilding().getElevetor(ind).getPos() > c.getSrc()) {
                 calls[ind].downQ.enqueue(c.getSrc());
             }
         }
@@ -113,7 +150,7 @@ public class YIOnlineElevAlgo implements ElevatorAlgo {
             calls[ind].downQ.enqueue(c.getSrc());
             calls[ind].downQ.sortQueueD(calls[ind].downQ);
         }
-      //  System.out.println(calls[ind].upQ.toString());
+        //  System.out.println(calls[ind].upQ.toString());
     }
 
     @Override
@@ -124,19 +161,19 @@ public class YIOnlineElevAlgo implements ElevatorAlgo {
 //            calls[elev].pointer.sortQueueD(calls[elev].pointer);
 //        }
         Elevator curr = this._building.getElevetor(elev);
-        if(calls[elev].downQ.isEmpty() && calls[elev].upQ.isEmpty()){
+        if (calls[elev].downQ.isEmpty() && calls[elev].upQ.isEmpty()) {
             return;
         }
-        if(calls[elev].pointer.isEmpty()){
+        if (calls[elev].pointer.isEmpty()) {
             calls[elev].Switch();
             return;
-        } else if (calls[elev].pointer.getFirst().getData() == curr.getPos()){
+        } else if (calls[elev].pointer.getFirst().getData() == curr.getPos()) {
             calls[elev].pointer.dequeue();
         }
-        if(!calls[elev].pointer.isEmpty() ){
-            if(curr.getState() == 0) {
+        if (!calls[elev].pointer.isEmpty()) {
+            if (curr.getState() == 0) {
                 curr.goTo(calls[elev].pointer.getFirst().getData());
-            } else if (curr.getState() == 1 || curr.getState() == -1){
+            } else if (curr.getState() == 1 || curr.getState() == -1) {
                 curr.stop(calls[elev].pointer.getFirst().getData());
             }
         }
@@ -157,7 +194,7 @@ public class YIOnlineElevAlgo implements ElevatorAlgo {
 //        }
 //        if (calls[elev].pointer.isEmpty()) {
 //            calls[elev].Switch();
-        }
     }
+}
 
 
