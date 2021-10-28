@@ -14,8 +14,8 @@ public class YIOnlineElevAlgo implements ElevatorAlgo {
 
     public YIOnlineElevAlgo(Building b) {
         _building = b;
-        calls = new EleQueue[numElev + 1];
         int numElev = b.numberOfElevetors();
+        calls = new EleQueue[numElev];
         for (int i = 0; i < numElev; i++) {
             calls[i] = new EleQueue();
         }
@@ -35,8 +35,8 @@ public class YIOnlineElevAlgo implements ElevatorAlgo {
         return ele.getTimeForClose() + ele.getTimeForOpen() + (floorToPass / speed) + ele.getStopTime() + ele.getStartTime();
     }
 
-    private static double timeToDestReverse(int ele, int dest){ // Time calculation based on destination if no pick up on the way is available
-        return ele-dest;
+    private static double timeToDestReverse(int ele, int dest) { // Time calculation based on destination if no pick up on the way is available
+        return ele - dest;
     }
 
     @Override
@@ -53,42 +53,46 @@ public class YIOnlineElevAlgo implements ElevatorAlgo {
     public int allocateAnElevator(CallForElevator c) {
         double min = Double.MAX_VALUE;
         int ind = -1;
-        for (int i = 0; i < numElev; i++) {
-            if (this.getBuilding().getElevetor(i).getState() == 0 && this.getBuilding().getElevetor(i).getPos() == c.getSrc()) {
-                if (c.getType() == 1) {
-                    calls[i].upQ.enqueue(c.getSrc());
-                    calls[i].upQ.enqueue(c.getDest());
-                    calls[i].upQ.sortQueueA(calls[i].upQ);
-                } else {
-                    calls[i].downQ.enqueue(c.getSrc());
-                    calls[i].downQ.enqueue(c.getDest());
-                    calls[i].downQ.sortQueueD(calls[i].downQ);
-                }
+        boolean flag = false;
+        for (int i = 0; i < this.getBuilding().numberOfElevetors(); i++) {
+            if (this.getBuilding().getElevetor(i).getState() == 0) {
+                flag = true;
+                ind = i;
             }
-            if (this.getBuilding().getElevetor(i).getState() == 1 && this.getBuilding().getElevetor(i).getPos() < c.getSrc() && c.getType() == 1) {
+            if (this.getBuilding().getElevetor(i).getState() == 1 && this.getBuilding().getElevetor(i).getPos() < c.getSrc() && c.getSrc() - c.getDest() < 1) {
+                flag = true;
                 if (timeToDest(_building.getElevetor(i), c.getSrc()) < min) {
                     min = timeToDest(_building.getElevetor(i), c.getSrc());
                     ind = i;
                 }
             }
-            if (this.getBuilding().getElevetor(i).getState() == -1 && this.getBuilding().getElevetor(i).getPos() > c.getSrc() && c.getType() == -1) {
+            if (this.getBuilding().getElevetor(i).getState() == -1 && this.getBuilding().getElevetor(i).getPos() > c.getSrc() && c.getSrc() - c.getDest() > 1) {
+                flag = true;
                 if (timeToDest(_building.getElevetor(i), c.getSrc()) < min) {
                     min = timeToDest(_building.getElevetor(i), c.getSrc());
                     ind = i;
                 }
             }
-            if(timeToDestReverse(calls[i].upQ.getLast(calls[i].upQ),c.getSrc()) < min){
-                min = timeToDestReverse(calls[i].upQ.getLast(calls[i].upQ),c.getSrc());
-                ind = i;
-            }
-            if(timeToDestReverse(calls[i].downQ.getLast(calls[i].downQ),c.getSrc()) < min) {
-                min = timeToDestReverse(calls[i].downQ.getLast(calls[i].downQ),c.getSrc());
-                ind = i;
+            if (!flag) {
+                if (timeToDestReverse(calls[i].upQ.getLast(calls[i].upQ), c.getSrc()) < min) {
+                    min = timeToDestReverse(calls[i].upQ.getLast(calls[i].upQ), c.getSrc());
+                    ind = i;
+                }
+                if (timeToDestReverse(calls[i].downQ.getLast(calls[i].downQ), c.getSrc()) < min) {
+                    min = timeToDestReverse(calls[i].downQ.getLast(calls[i].downQ), c.getSrc());
+                    ind = i;
+                }
             }
         }
-        if (ind == -1)
-            ind = 0;
-        if (c.getType() == 1) {
+        allocate(c, ind);
+        if (flag) {
+            flag = false;
+        }
+        return ind;
+    }
+
+    private void allocate(CallForElevator c, int ind) {
+        if (c.getSrc() - c.getDest() < 1) {
             calls[ind].upQ.enqueue(c.getSrc());
             calls[ind].upQ.enqueue(c.getDest());
             calls[ind].upQ.sortQueueA(calls[ind].upQ);
@@ -97,24 +101,27 @@ public class YIOnlineElevAlgo implements ElevatorAlgo {
             calls[ind].downQ.enqueue(c.getDest());
             calls[ind].downQ.sortQueueD(calls[ind].downQ);
         }
-        return ind;
     }
-
 
     @Override
     public void cmdElevator(int elev) {
-        if(calls[elev].pointer.size() == 0){
+        if (calls[elev].pointer.getFirst() == null) {
             calls[elev].Switch();
         }
-        //UP
+        Elevator curr = this._building.getElevetor(elev);
         if (calls[elev].pointer.getFirst() != null) {
-            this._building.getElevetor(elev).goTo(calls[elev].pointer.getFirst().getData());
-            if (calls[elev].pointer.getFirst().getData() > this._building.getElevetor(elev).getPos() &&
-                    calls[elev].pointer.getLast().getData() > this._building.getElevetor(elev).getPos() &&
-                    calls[elev].pointer.getFirst().getData() > calls[elev].pointer.getLast().getData())
-                if (this._building.getElevetor(elev).getPos() == calls[elev].pointer.getFirst().getData()) {
-                    calls[elev].pointer.dequeue();
-                }
+            if(curr.getState() == 0){
+                curr.goTo(calls[elev].pointer.peek());
+                calls[elev].pointer.dequeue();
+            } else if (curr.getState() == 1 && curr.getPos() < calls[elev].pointer.peek()){
+                curr.stop(calls[elev].pointer.peek());
+                calls[elev].pointer.dequeue();
+                curr.goTo(calls[elev].pointer.getLast().getData());
+            } else if(curr.getState() == -1 && curr.getPos() > calls[elev].pointer.peek()){
+                curr.stop(calls[elev].pointer.peek());
+                calls[elev].pointer.dequeue();
+                curr.goTo(calls[elev].pointer.getLast().getData());
+            }
         }
     }
 }
