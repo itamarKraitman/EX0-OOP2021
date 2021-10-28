@@ -9,15 +9,14 @@ import ex0.simulator.Simulator_A;
  * starting to implement the algorithm.
  */
 public class Ex0_main {
-    public static Long ID0 = 123456789L, ID1 = null, ID2 = null;
+    public static Long ID0 = 311252415L, ID1 = 208925578L, ID2 = null;
 
     public static void main(String[] ar) {
         String codeOwner = codeOwner();
         Simulator_A.setCodeOwner(codeOwner);
-        for (int stage = 0; stage < 10; stage++) {
             //   String codeOwner = codeOwner();
             Simulator_A.setCodeOwner(codeOwner);
-            //             int stage = 1;  // any case in [0,9].
+            int stage = 9;  // any case in [0,9].
             System.out.println("Ex0 Simulator: isStarting, stage=" + stage + ") ... =  ");
             String callFile = null; // use the predefined cases [0-9].
             // String callFile = "data/Ex0_stage_2__.csv"; //
@@ -36,7 +35,6 @@ public class Ex0_main {
             //Simulator_A.report(); // if now file  - simple prints just the results.
             Simulator_A.writeAllCalls("out/Ex0_Calls_case_" + stage + "_.csv"); // time,src,dest,state,elevInd, dt.
         }
-    }
 
 
     private static String codeOwner() {

@@ -53,15 +53,15 @@ public class YIOnlineElevAlgo implements ElevatorAlgo {
         for (int i = 0; i < this.getBuilding().numberOfElevetors(); i++) {
             if (this.getBuilding().getElevetor(i).getState() == 0 || (this.getBuilding().getElevetor(i).getState() == 1 && this.getBuilding().getElevetor(i).getPos() < c.getSrc() && c.getSrc() - c.getDest() < 1)) {
                 flag = true;
-                if (timeToDest(_building.getElevetor(i), c.getSrc()) < min) {
+                if (timeToDest(this._building.getElevetor(i), c.getSrc()) < min) {
                     min = timeToDest(_building.getElevetor(i), c.getSrc());
                     ind = i;
                 }
             }
             if (this.getBuilding().getElevetor(i).getState() == 0 || (this.getBuilding().getElevetor(i).getState() == -1 && this.getBuilding().getElevetor(i).getPos() > c.getSrc() && c.getSrc() - c.getDest() > 1)) {
                 flag = true;
-                if (timeToDest(_building.getElevetor(i), c.getSrc()) < min) {
-                    min = timeToDest(_building.getElevetor(i), c.getSrc());
+                if (timeToDest(this._building.getElevetor(i), c.getSrc()) < min) {
+                    min = timeToDest(this._building.getElevetor(i), c.getSrc());
                     ind = i;
                 }
             }
@@ -71,8 +71,8 @@ public class YIOnlineElevAlgo implements ElevatorAlgo {
             return ind;
         }
         for (int i = 0; i < this.getBuilding().numberOfElevetors(); i++) {
-            if (timeToDest(_building.getElevetor(i), c.getSrc()) < min) {
-                min = timeToDest(_building.getElevetor(i), c.getSrc());
+            if (timeToDest(this._building.getElevetor(i), c.getSrc()) < min) {
+                min = timeToDest(this._building.getElevetor(i), c.getSrc());
                 ind = i;
             }
         }
@@ -90,23 +90,18 @@ public class YIOnlineElevAlgo implements ElevatorAlgo {
             }
         }
         if (c.getSrc() - c.getDest() < 1) {
-            calls[ind].upQ.enqueue(c.getDest());
             calls[ind].upQ.enqueue(c.getSrc());
+            calls[ind].upQ.enqueue(c.getDest());
             calls[ind].upQ.sortQueueA(calls[ind].upQ);
         } else {
-            calls[ind].downQ.enqueue(c.getDest());
             calls[ind].downQ.enqueue(c.getSrc());
+            calls[ind].downQ.enqueue(c.getDest());
             calls[ind].downQ.sortQueueD(calls[ind].downQ);
         }
     }
 
     @Override
     public void cmdElevator(int elev) {
-//        if(calls[elev].pointer == calls[elev].upQ){
-//            calls[elev].pointer.sortQueueA(calls[elev].pointer);
-//        } else {
-//            calls[elev].pointer.sortQueueD(calls[elev].pointer);
-//        }
         Elevator curr = this._building.getElevetor(elev);
         if (calls[elev].downQ.isEmpty() && calls[elev].upQ.isEmpty()) {
             return;
@@ -114,15 +109,29 @@ public class YIOnlineElevAlgo implements ElevatorAlgo {
         if (calls[elev].pointer.isEmpty()) {
             calls[elev].Switch();
             return;
-        } else if (calls[elev].pointer.getFirst().getData() == curr.getPos()) {
+        }
+        else if (calls[elev].pointer.getFirst().getData() == curr.getPos()) {
             calls[elev].pointer.dequeue();
         }
         if (!calls[elev].pointer.isEmpty()) {
             if (curr.getState() == 0) {
                 curr.goTo(calls[elev].pointer.getFirst().getData());
-            } else if (curr.getState() == 1 || curr.getState() == -1) {
-                curr.stop(calls[elev].pointer.getFirst().getData());
             }
+            else {
+                if (curr.getState() == 1){
+                    if (this._building.getElevetor(elev).getPos() <= calls[elev].pointer.getFirst().getData()){
+                        curr.stop(calls[elev].pointer.getFirst().getData());
+                    }
+                }
+                else {
+                    if (this._building.getElevetor(elev).getPos() >= calls[elev].pointer.getFirst().getData()){
+                        curr.stop(calls[elev].pointer.getFirst().getData());
+                    }
+                }
+            }
+//                if (curr.getState() == 1 || curr.getState() == -1) {
+//                curr.stop(calls[elev].pointer.getFirst().getData());
+//            }
         }
 
 //        if (calls[elev].pointer.getFirst() != null) {
