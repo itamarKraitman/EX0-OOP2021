@@ -1,0 +1,81 @@
+@startuml
+interface Building {
++minFloor : int
++maxFloor : int
++numberOfElevators : int
++getBuildingName() : String
++getElevator() : int
+}
+
+interface ElevatorAlgo {
+-allocateAnElevator : int
++getBuilding() : Building
++getName() : String
++cmdElevator : int
+}
+
+interface CallForElevator {
+state : int
++getState() : int
++allocateElevator()
++reachedSrc()
++reachedSDest()
++getTime() : double
++getSrc() : int
++getDest() : int
++getType() : int
++allocatedTo() : int
+
+}
+interface Elevator {
+state : int
++getMinFloor() : int
++getMaxFloor() : int
++getTimeForOpen() : double
++getTimeForClose() : double
++getState() : int
++getPos() : int
++goTo(int floor) : boolean
++stop(int floor) : boolean
++getSpeed() : double
++getStartTime() : double
++getStopTime() : double
+
+}
+
+
+class YIOnlineElevAlgo {
+EleQueue
+-allocateAnElevator()
+-allocate()
+-timeToDest()
++cmdElevator()
++getBuilding()
++algoName()
+}
+
+class EleQueue {
++callNode
++callsQueue : Queue
++enqueue()
++dequeue()
++peek()
++getSize()
++getFirst()
++isEmpty()
++sortQueueA()
++sortQueueD()
++toString()
++getLast()
++size()
+}
+
+ElevatorAlgo <|...YIOnlineElevAlgo
+YIOnlineElevAlgo *-- EleQueue
+Elevator <-- Building
+YIOnlineElevAlgo o- Building
+YIOnlineElevAlgo o- Elevator
+CallForElevator <- Elevator
+YIOnlineElevAlgo o- CallForElevator
+
+@enduml
